@@ -57,7 +57,9 @@ async function saveEvidenceRecord(evidence: Evidence) {
 }
 
 function findConcept(slug: string) {
-  const contentDir = path.resolve(process.cwd(), "content");
+  const contentDir = fs.existsSync(path.resolve(process.cwd(), "content"))
+    ? path.resolve(process.cwd(), "content")
+    : path.resolve(process.cwd(), "../../content");
   function scan(dir: string): any {
     if (!fs.existsSync(dir)) return null;
     const entries = fs.readdirSync(dir, { withFileTypes: true });
