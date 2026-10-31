@@ -306,7 +306,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
               feedback,
               recordedEvidence: newEvidence,
               updatedConceptState: state,
-              storageBackend: "drizzle_sqlite"
+              storageBackend: "supabase_postgres"
             },
             null,
             2
@@ -330,7 +330,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
               state,
               evidenceCount: conceptEvidence.length,
               evidence: conceptEvidence,
-              storageBackend: "drizzle_sqlite"
+              storageBackend: "supabase_postgres"
             },
             null,
             2
