@@ -47,7 +47,7 @@ const client = postgres(connectionString, {
 
 export const db = drizzle(client, { schema });
 
-// Auto-migration / table creation helper for Postgres
+// Auto-migration & RLS configuration for Supabase Postgres
 export async function initDatabase() {
   if (!connectionString) {
     throw new Error("Cannot initialize database: DATABASE_URL is missing.");
@@ -108,4 +108,11 @@ export async function initDatabase() {
       timestamp TEXT NOT NULL
     );
   `;
+
+  // Ensure Row-Level Security (RLS) is enabled across all tables
+  await client`ALTER TABLE IF EXISTS public.domains ENABLE ROW LEVEL SECURITY;`;
+  await client`ALTER TABLE IF EXISTS public.concepts ENABLE ROW LEVEL SECURITY;`;
+  await client`ALTER TABLE IF EXISTS public.concept_edges ENABLE ROW LEVEL SECURITY;`;
+  await client`ALTER TABLE IF EXISTS public.users ENABLE ROW LEVEL SECURITY;`;
+  await client`ALTER TABLE IF EXISTS public.learning_evidence ENABLE ROW LEVEL SECURITY;`;
 }
