@@ -1,30 +1,59 @@
-import { createClient } from "@libsql/client";
-import { drizzle } from "drizzle-orm/libsql";
+import postgres from "postgres";
+import { drizzle } from "drizzle-orm/postgres-js";
 import * as curriculumSchema from "./schema/curriculum.js";
 import * as learnerSchema from "./schema/learner.js";
+import * as dotenv from "dotenv";
 import * as path from "path";
 import * as fs from "fs";
+
+// Load .env.local or .env from root workspace
+const rootEnvLocal = path.resolve(process.cwd(), ".env.local");
+const rootEnv = path.resolve(process.cwd(), ".env");
+
+if (fs.existsSync(rootEnvLocal)) {
+  dotenv.config({ path: rootEnvLocal });
+} else if (fs.existsSync(rootEnv)) {
+  dotenv.config({ path: rootEnv });
+}
 
 export const schema = {
   ...curriculumSchema,
   ...learnerSchema,
 };
 
-const DATA_DIR = path.resolve(process.cwd(), "data");
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
-}
-const DB_PATH = path.join(DATA_DIR, "fundaments.db");
+let connectionString =
+  process.env.DATABASE_URL ||
+  process.env.SUPABASE_DB_URL ||
+  process.env.POSTGRES_URL || "";
 
-const client = createClient({
-  url: `file:${DB_PATH.replace(/\\/g, "/")}`
+// Normalize connection: use port 5432 and encode password if needed
+try {
+  if (connectionString) {
+    const parsed = new URL(connectionString);
+    if (parsed.port === "6543") {
+      parsed.port = "5432";
+    }
+    if (parsed.password) {
+      parsed.password = encodeURIComponent(decodeURIComponent(parsed.password));
+    }
+    connectionString = parsed.toString();
+  }
+} catch (e) {}
+
+const client = postgres(connectionString, {
+  prepare: false,
+  ssl: "require",
 });
 
 export const db = drizzle(client, { schema });
 
-// Auto-migration helper for development
+// Auto-migration / table creation helper for Postgres
 export async function initDatabase() {
-  await client.execute(`
+  if (!connectionString) {
+    throw new Error("Cannot initialize database: DATABASE_URL is missing.");
+  }
+
+  await client`
     CREATE TABLE IF NOT EXISTS domains (
       id TEXT PRIMARY KEY,
       slug TEXT NOT NULL UNIQUE,
@@ -32,38 +61,38 @@ export async function initDatabase() {
       description TEXT,
       order_index INTEGER NOT NULL DEFAULT 0
     );
-  `);
+  `;
 
-  await client.execute(`
+  await client`
     CREATE TABLE IF NOT EXISTS concepts (
       id TEXT PRIMARY KEY,
       slug TEXT NOT NULL UNIQUE,
-      domain_id TEXT NOT NULL,
+      domain_id TEXT NOT NULL REFERENCES domains(id),
       name TEXT NOT NULL,
       difficulty TEXT NOT NULL,
       description TEXT NOT NULL,
       learning_objectives TEXT NOT NULL
     );
-  `);
+  `;
 
-  await client.execute(`
+  await client`
     CREATE TABLE IF NOT EXISTS concept_edges (
       id TEXT PRIMARY KEY,
-      from_concept_id TEXT NOT NULL,
-      to_concept_id TEXT NOT NULL,
+      from_concept_id TEXT NOT NULL REFERENCES concepts(id),
+      to_concept_id TEXT NOT NULL REFERENCES concepts(id),
       type TEXT NOT NULL
     );
-  `);
+  `;
 
-  await client.execute(`
+  await client`
     CREATE TABLE IF NOT EXISTS users (
       id TEXT PRIMARY KEY,
       email TEXT NOT NULL UNIQUE,
-      created_at TEXT NOT NULL
+      created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
     );
-  `);
+  `;
 
-  await client.execute(`
+  await client`
     CREATE TABLE IF NOT EXISTS learning_evidence (
       id TEXT PRIMARY KEY,
       user_id TEXT NOT NULL,
@@ -73,10 +102,10 @@ export async function initDatabase() {
       assistance TEXT NOT NULL,
       task_prompt TEXT NOT NULL,
       learner_submission TEXT NOT NULL,
-      passed INTEGER NOT NULL,
+      passed BOOLEAN NOT NULL,
       score INTEGER,
       feedback TEXT,
       timestamp TEXT NOT NULL
     );
-  `);
+  `;
 }

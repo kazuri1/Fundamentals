@@ -1,12 +1,12 @@
-import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import { pgTable, text, boolean, integer, timestamp } from "drizzle-orm/pg-core";
 
-export const users = sqliteTable("users", {
+export const users = pgTable("users", {
   id: text("id").primaryKey(),
   email: text("email").notNull().unique(),
-  createdAt: text("created_at").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-export const learningEvidence = sqliteTable("learning_evidence", {
+export const learningEvidence = pgTable("learning_evidence", {
   id: text("id").primaryKey(),
   userId: text("user_id").notNull(),
   conceptId: text("concept_id").notNull(),
@@ -15,7 +15,7 @@ export const learningEvidence = sqliteTable("learning_evidence", {
   assistance: text("assistance").notNull(),
   taskPrompt: text("task_prompt").notNull(),
   learnerSubmission: text("learner_submission").notNull(),
-  passed: integer("passed", { mode: "boolean" }).notNull(),
+  passed: boolean("passed").notNull(),
   score: integer("score"),
   feedback: text("feedback"),
   timestamp: text("timestamp").notNull(),

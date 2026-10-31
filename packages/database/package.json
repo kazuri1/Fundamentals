@@ -10,10 +10,13 @@
   "dependencies": {
     "@fundaments/shared": "workspace:*",
     "@libsql/client": "^0.18.0",
-    "drizzle-orm": "^0.39.3"
+    "dotenv": "^18.0.9",
+    "drizzle-orm": "^0.39.3",
+    "postgres": "^4.0.0"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.12",
+    "@types/pg": "^8.23.1",
     "drizzle-kit": "^0.30.4",
     "typescript": "^5.8.2"
   }
