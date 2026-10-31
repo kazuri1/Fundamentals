@@ -1,0 +1,15 @@
+{
+  "id": "concept_arch_bin_001",
+  "slug": "binary-representation",
+  "name": "Binary Representation & Two's Complement",
+  "domain": "Computer Architecture",
+  "difficulty": "foundational",
+  "description": "How integers, negative numbers, and numerical logic are represented at the hardware level using bits and two's complement arithmetic.",
+  "learning_objectives": [
+    "Explain why physical digital hardware naturally operates in binary (on/off voltage levels).",
+    "Derive two's complement from first principles as a solution to avoid separate subtraction circuits.",
+    "Perform signed and unsigned bitwise calculations and predict integer overflow behaviors.",
+    "Contrast two's complement with sign-magnitude and one's complement, articulating the zero-representation trade-off."
+  ],
+  "prerequisites": []
+}

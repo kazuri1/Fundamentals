@@ -1,0 +1,18 @@
+{
+  "userId": "default_learner",
+  "evidence": [
+    {
+      "userId": "default_learner",
+      "conceptId": "concept_arch_bin_001",
+      "step": "assessment",
+      "dimension": "prediction",
+      "assistance": "independent",
+      "taskPrompt": "What is decimal -5 represented as an 8-bit signed two's complement integer in binary?",
+      "learnerSubmission": "11111011",
+      "passed": true,
+      "feedback": "Correct! The calculation accurately reflects hardware two's complement behavior.",
+      "timestamp": "2026-10-31T13:09:35.482Z"
+    }
+  ],
+  "updatedAt": "2026-10-31T13:09:35.483Z"
+}

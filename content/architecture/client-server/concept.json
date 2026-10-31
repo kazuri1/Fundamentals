@@ -1,0 +1,14 @@
+{
+  "id": "concept_arch_cs_001",
+  "slug": "client-server",
+  "name": "Client-Server Execution Boundary & Serialization",
+  "domain": "Software Engineering",
+  "difficulty": "intermediate",
+  "description": "The physical and logical separation of code execution environments, data serialization boundaries (JSON, RPC), and security boundaries.",
+  "learning_objectives": [
+    "Identify what executes in browser runtime vs Node/server runtime.",
+    "Explain why functions, closures, and database credentials cannot cross serialization boundaries.",
+    "Reason about latency, network failures, and optimistic updates across boundaries."
+  ],
+  "prerequisites": ["concept_net_http_001"]
+}

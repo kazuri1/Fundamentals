@@ -1,0 +1,14 @@
+{
+  "id": "concept_web_hydration_001",
+  "slug": "hydration",
+  "name": "SSR, HTML Streaming & DOM Hydration",
+  "domain": "Web Engineering",
+  "difficulty": "intermediate",
+  "description": "The mechanics of rendering HTML on a server, transmitting it over HTTP, and having browser JavaScript attach event listeners and state to the existing DOM tree.",
+  "learning_objectives": [
+    "Differentiate static HTML parsing from JavaScript DOM hydration.",
+    "Explain the root causes of hydration mismatch errors.",
+    "Understand why SSR speeds up First Contentful Paint (FCP) but requires JavaScript for Time to Interactive (TTI)."
+  ],
+  "prerequisites": ["concept_arch_cs_001", "concept_net_http_001"]
+}

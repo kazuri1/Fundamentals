@@ -1,0 +1,39 @@
+# Binary Representation & Two's Complement
+
+## 1. The Core Problem
+Digital computers are constructed using transistors functioning as electrical switches (cutoff vs. saturation). Representing values as two discrete states (high voltage / low voltage, or 1 and 0) provides maximum noise immunity compared to multi-level analog voltage signaling.
+
+However, an immediate architectural problem emerges: **How do we represent negative numbers and perform subtraction?**
+
+If we build separate electronic circuitry for addition and subtraction, the CPU requires roughly double the silicon area and complexity for its basic Arithmetic Logic Unit (ALU).
+
+## 2. Deriving the Principle
+Can we make subtraction simply a variation of addition?
+$$ A - B = A + (-B) $$
+
+### Failed Attempt 1: Sign-Magnitude
+- Use the most significant bit (MSB) as a sign bit ($0 = +$, $1 = -$).
+- **Problems:** 
+  - Dual representation of zero ($+0 = 0000_2$, $-0 = 1000_2$), wasting state space and complicating conditional logic.
+  - Basic binary adder circuits give incorrect results when adding positive and negative numbers without complex special-case logic.
+
+### Solution: Two's Complement
+Assign the most significant bit (bit $n-1$) a **negative weight**:
+$$ \text{Value} = -b_{n-1} 2^{n-1} + \sum_{i=0}^{n-2} b_i 2^i $$
+
+For an 8-bit number:
+- Bit 7 has weight $-2^7 = -128$.
+- Bits 0 through 6 have positive weights $2^0$ through $2^6$ ($1, 2, 4, 8, 16, 32, 64$).
+
+To compute $-X$: Invert all bits and add 1 ($~X + 1$).
+Because $(X + \sim X) = 11111111_2 = -1$, adding 1 yields $0$ with overflow discarded!
+The hardware arithmetic adder requires **zero modifications** to perform both addition and subtraction.
+
+## 3. Practical Experiment
+In any terminal or REPL:
+```python
+# 8-bit integer overflow simulation
+x = 127 # 01111111
+print(f"127 + 1 in 8-bit signed two's complement: {(x + 1) - 256 if (x + 1) > 127 else (x + 1)}")
+# Output is -128!
+```

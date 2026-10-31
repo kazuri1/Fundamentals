@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "fundaments": {
+      "command": "pnpm",
+      "args": ["exec", "tsx", "integrations/mcp-server/src/index.ts"]
+    }
+  }
+}

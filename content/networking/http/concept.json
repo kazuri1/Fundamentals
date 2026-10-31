@@ -1,0 +1,14 @@
+{
+  "id": "concept_net_http_001",
+  "slug": "http",
+  "name": "HTTP & Stateless Client-Server Communication",
+  "domain": "Networking and the Internet",
+  "difficulty": "foundational",
+  "description": "Hypertext Transfer Protocol: request-response semantics, statelessness, headers, status codes, and cookies.",
+  "learning_objectives": [
+    "Explain why HTTP is stateless and how session state is persisted.",
+    "Contrast HTTP methods (GET, POST, PUT, DELETE) and idempotency.",
+    "Explain header semantics, caching directives, and content negotiation."
+  ],
+  "prerequisites": []
+}

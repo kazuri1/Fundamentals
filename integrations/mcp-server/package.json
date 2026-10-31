@@ -1,0 +1,23 @@
+{
+  "name": "@fundaments/mcp-server",
+  "version": "0.1.0",
+  "main": "./src/index.ts",
+  "bin": "./src/index.ts",
+  "scripts": {
+    "start": "ts-node src/index.ts"
+  },
+  "dependencies": {
+    "@fundaments/shared": "workspace:*",
+    "@fundaments/teaching-engine": "workspace:*",
+    "@fundaments/mastery-engine": "workspace:*",
+    "@fundaments/project-intelligence": "workspace:*",
+    "@fundaments/database": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.6.1",
+    "drizzle-orm": "^0.39.3",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  }
+}
