@@ -1,0 +1,30 @@
+{
+  "name": "@fundaments/web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@fundaments/shared": "workspace:*",
+    "@fundaments/teaching-engine": "workspace:*",
+    "@fundaments/mastery-engine": "workspace:*",
+    "@fundaments/project-intelligence": "workspace:*",
+    "@fundaments/database": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.6.1",
+    "next": "15.2.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "drizzle-orm": "^0.39.3",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.9",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "typescript": "^5.8.2"
+  }
+}

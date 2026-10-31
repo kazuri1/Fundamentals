@@ -1,7 +1,7 @@
 import postgres from "postgres";
 import { drizzle } from "drizzle-orm/postgres-js";
-import * as curriculumSchema from "./schema/curriculum.js";
-import * as learnerSchema from "./schema/learner.js";
+import * as curriculumSchema from "./schema/curriculum";
+import * as learnerSchema from "./schema/learner";
 import * as dotenv from "dotenv";
 import * as path from "path";
 import * as fs from "fs";
@@ -26,7 +26,6 @@ let connectionString =
   process.env.SUPABASE_DB_URL ||
   process.env.POSTGRES_URL || "";
 
-// Normalize connection: use port 5432 and encode password if needed
 try {
   if (connectionString) {
     const parsed = new URL(connectionString);
@@ -40,17 +39,17 @@ try {
   }
 } catch (e) {}
 
-const client = postgres(connectionString, {
+const client = postgres(connectionString || "postgres://localhost/dummy", {
   prepare: false,
-  ssl: "require",
+  ssl: connectionString.includes("supabase.co") ? "require" : undefined,
 });
 
 export const db = drizzle(client, { schema });
 
-// Auto-migration & RLS configuration for Supabase Postgres
 export async function initDatabase() {
   if (!connectionString) {
-    throw new Error("Cannot initialize database: DATABASE_URL is missing.");
+    console.warn("Skipping initDatabase: DATABASE_URL not provided.");
+    return;
   }
 
   await client`
@@ -109,7 +108,6 @@ export async function initDatabase() {
     );
   `;
 
-  // Ensure Row-Level Security (RLS) is enabled across all tables
   await client`ALTER TABLE IF EXISTS public.domains ENABLE ROW LEVEL SECURITY;`;
   await client`ALTER TABLE IF EXISTS public.concepts ENABLE ROW LEVEL SECURITY;`;
   await client`ALTER TABLE IF EXISTS public.concept_edges ENABLE ROW LEVEL SECURITY;`;
