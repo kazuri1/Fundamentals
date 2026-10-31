@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@fundaments/shared": "workspace:*",
+    "@fundaments/knowledge-graph": "workspace:*",
     "@fundaments/teaching-engine": "workspace:*",
     "@fundaments/mastery-engine": "workspace:*",
     "@fundaments/project-intelligence": "workspace:*",

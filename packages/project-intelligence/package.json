@@ -5,6 +5,7 @@
   "types": "./src/index.ts",
   "dependencies": {
     "@fundaments/shared": "workspace:*",
+    "@fundaments/knowledge-graph": "workspace:*",
     "zod": "^3.24.2"
   },
   "devDependencies": {

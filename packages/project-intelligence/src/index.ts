@@ -1,4 +1,5 @@
-import { Evidence } from "@fundaments/shared";
+import { Concept, Evidence } from "@fundaments/shared";
+import { KnowledgeGraphEngine, ProjectRoadmap } from "@fundaments/knowledge-graph";
 
 export interface ProjectAnalysisResult {
   detectedTechnologies: string[];
@@ -13,7 +14,6 @@ export interface ProjectAnalysisResult {
   }>;
 }
 
-// Tech signatures & keywords mapping
 const TECHNOLOGY_FOUNDATIONS_MAP: Record<
   string,
   {
@@ -60,9 +60,32 @@ const TECHNOLOGY_FOUNDATIONS_MAP: Record<
     concepts: [
       {
         conceptId: "concept_db_tx_001",
-        conceptName: "Relational Transactions & Connection Pooling",
+        conceptName: "Relational Transactions, ACID & Connection Pooling",
         reason: "ORM database query execution and connection lifecycle.",
         socraticHook: "If two users execute a database mutation at the same millisecond, what database mechanism prevents a dirty read?"
+      },
+      {
+        conceptId: "concept_db_idx_001",
+        conceptName: "B-Tree Database Indexing & Disk I/O",
+        reason: "Database querying over tables without understanding indexing costs.",
+        socraticHook: "Why does a SELECT query degrade exponentially on 100,000 rows without a B-Tree index?"
+      }
+    ]
+  },
+  postgres: {
+    keywords: ["postgres", "postgresql", "supabase", "drizzle-orm", "drizzle"],
+    concepts: [
+      {
+        conceptId: "concept_db_tx_001",
+        conceptName: "Relational Transactions, ACID & Connection Pooling",
+        reason: "Direct relational database operations, connection pooler configuration, and transactions.",
+        socraticHook: "Why do serverless cloud functions require a transaction pooler (port 6543) instead of direct connections (port 5432)?"
+      },
+      {
+        conceptId: "concept_db_idx_001",
+        conceptName: "B-Tree Database Indexing & Disk I/O",
+        reason: "Relational table indexing and sequential scan avoidance.",
+        socraticHook: "What is an index B-Tree, and how does it balance disk page reads during query execution?"
       }
     ]
   }
@@ -112,5 +135,34 @@ export class ProjectIntelligenceEngine {
       missingFoundations,
       recommendations
     };
+  }
+
+  /**
+   * Compiles the full personalized roadmap with time estimates down to bedrock
+   */
+  static compileProjectRoadmap(
+    projectName: string,
+    contextText: string,
+    allCurriculumConcepts: Concept[],
+    learnerEvidence: Evidence[]
+  ): ProjectRoadmap {
+    const analysis = this.analyzeContext(contextText, learnerEvidence);
+    const graphEngine = new KnowledgeGraphEngine(allCurriculumConcepts);
+
+    const demonstratedSet = new Set(
+      learnerEvidence.filter((e) => e.passed).map((e) => e.conceptId)
+    );
+
+    const contextReasons: Record<string, string> = {};
+    for (const rec of analysis.recommendations) {
+      contextReasons[rec.conceptId] = rec.reason;
+    }
+
+    return graphEngine.generateRoadmap(
+      projectName,
+      analysis.relevantConceptIds,
+      demonstratedSet,
+      contextReasons
+    );
   }
 }

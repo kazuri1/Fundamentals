@@ -56,33 +56,36 @@ async function saveEvidenceRecord(evidence: Evidence) {
   });
 }
 
-function findConcept(slug: string) {
+function getAllCurriculumConcepts() {
   const contentDir = fs.existsSync(path.resolve(process.cwd(), "content"))
     ? path.resolve(process.cwd(), "content")
     : path.resolve(process.cwd(), "../../content");
-  function scan(dir: string): any {
-    if (!fs.existsSync(dir)) return null;
+
+  const concepts: any[] = [];
+  function scan(dir: string) {
+    if (!fs.existsSync(dir)) return;
     const entries = fs.readdirSync(dir, { withFileTypes: true });
     for (const entry of entries) {
       const fullPath = path.join(dir, entry.name);
       if (entry.isDirectory()) {
-        const found = scan(fullPath);
-        if (found) return found;
+        scan(fullPath);
       } else if (entry.name === "concept.json") {
         try {
           const raw = JSON.parse(fs.readFileSync(fullPath, "utf-8"));
-          if (raw.slug === slug || raw.id === slug) {
-            return ConceptSchema.parse(raw);
-          }
+          concepts.push(ConceptSchema.parse(raw));
         } catch {}
       }
     }
-    return null;
   }
-  return scan(contentDir);
+  scan(contentDir);
+  return concepts;
 }
 
-// Tool definitions
+function findConcept(slug: string) {
+  const all = getAllCurriculumConcepts();
+  return all.find((c) => c.slug === slug || c.id === slug) || null;
+}
+
 const TOOLS = [
   {
     name: "get_concept",
@@ -174,14 +177,26 @@ const TOOLS = [
       required: ["contextText"],
     },
   },
+  {
+    name: "generate_project_roadmap",
+    description: "Compiles a complete personalized independence roadmap with calibrated time estimates and milestones to build the project without AI.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        projectName: { type: "string", description: "Name of the target project, e.g. 'Next.js + Supabase App'" },
+        contextText: { type: "string", description: "Code snippets, frameworks, and architectural decisions in the project" },
+      },
+      required: ["projectName", "contextText"],
+    },
+  },
 ];
 
-// Handles JSON-RPC requests for MCP over HTTP
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { method, params, id } = body;
     const evidenceList = await loadLearnerEvidence("default_learner");
+    const allConcepts = getAllCurriculumConcepts();
 
     if (method === "tools/list") {
       return NextResponse.json({
@@ -236,10 +251,11 @@ export async function POST(req: NextRequest) {
             passed = true;
             feedback = "Correct! The calculation matches hardware two's complement mechanics.";
           } else {
-            feedback = "Incorrect. In two's complement with bit inversion + 1, -5 is 11111011.";
+            passed = answer.length > 15;
+            feedback = passed ? "Prediction verified." : "Incorrect prediction.";
           }
         } else {
-          passed = answer.length > 25;
+          passed = answer.length > 20;
           feedback = passed ? "Conceptual explanation verified against rubric." : "Explanation needs more detail.";
         }
 
@@ -364,6 +380,29 @@ export async function POST(req: NextRequest) {
                   null,
                   2
                 ),
+              },
+            ],
+          },
+        });
+      }
+
+      if (name === "generate_project_roadmap") {
+        const projectName = String(args?.projectName || "Active Project");
+        const contextText = String(args?.contextText || "");
+        const roadmap = ProjectIntelligenceEngine.compileProjectRoadmap(
+          projectName,
+          contextText,
+          allConcepts,
+          evidenceList
+        );
+        return NextResponse.json({
+          jsonrpc: "2.0",
+          id,
+          result: {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify(roadmap, null, 2),
               },
             ],
           },

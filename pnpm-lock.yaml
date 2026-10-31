@@ -29,6 +29,9 @@ importers:
       '@fundaments/database':
         specifier: workspace:*
         version: link:../../packages/database
+      '@fundaments/knowledge-graph':
+        specifier: workspace:*
+        version: link:../../packages/knowledge-graph
       '@fundaments/mastery-engine':
         specifier: workspace:*
         version: link:../../packages/mastery-engine
@@ -78,6 +81,9 @@ importers:
       '@fundaments/database':
         specifier: workspace:*
         version: link:../../packages/database
+      '@fundaments/knowledge-graph':
+        specifier: workspace:*
+        version: link:../../packages/knowledge-graph
       '@fundaments/mastery-engine':
         specifier: workspace:*
         version: link:../../packages/mastery-engine
@@ -138,6 +144,19 @@ importers:
         specifier: ^5.8.2
         version: 5.9.3
 
+  packages/knowledge-graph:
+    dependencies:
+      '@fundaments/shared':
+        specifier: workspace:*
+        version: link:../shared
+      zod:
+        specifier: ^3.24.2
+        version: 3.25.76
+    devDependencies:
+      typescript:
+        specifier: ^5.8.2
+        version: 5.9.3
+
   packages/mastery-engine:
     dependencies:
       '@fundaments/shared':
@@ -153,6 +172,9 @@ importers:
 
   packages/project-intelligence:
     dependencies:
+      '@fundaments/knowledge-graph':
+        specifier: workspace:*
+        version: link:../knowledge-graph
       '@fundaments/shared':
         specifier: workspace:*
         version: link:../shared
